@@ -43,3 +43,34 @@ original_size = os.path.getsize("message.txt")
 encrypted_size = os.path.getsize("message_rsa_encrypted.bin")
 print(f"\nOriginal file size: {original_size} bytes")
 print(f"Encrypted file size: {encrypted_size} bytes (256 bytes for a 2048-bit key)")
+
+print("\n--- RSA Decryption Script Starting ---")
+
+private_key_loaded = RSA.import_key(open("private.pem").read())
+
+with open("message_rsa_encrypted.bin", "rb") as f:
+    encrypted_data = f.read()
+
+
+cipher_rsa_decrypt = PKCS1_OAEP.new(private_key_loaded)
+
+decrypted_data = cipher_rsa_decrypt.decrypt(encrypted_data)
+
+with open("message_rsa_decrypted.txt", "wb") as f:
+    f.write(decrypted_data)
+
+print(f"File decrypted successfully! Output saved to message_rsa_decrypted.txt")
+
+
+with open("message.txt", "r") as f_orig:
+    original_content = f_orig.read()
+
+with open("message_rsa_decrypted.txt", "r") as f_dec:
+    decrypted_content = f_dec.read()
+
+if original_content == decrypted_content:
+    print("\nVerification SUCCESS: The decrypted content matches the original message.")
+else:
+    print("\nVerification FAILED: The decrypted content does not match the original.")
+
+print("\n--- Decryption Finished ---")
