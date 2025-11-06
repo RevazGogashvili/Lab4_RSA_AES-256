@@ -1,0 +1,54 @@
+RSA and AES are two of the most widely used encryption algorithms today, but they are fundamentally different and are designed to solve different problems. 
+RSA is an asymmetric algorithm (using a public/private key pair), while AES is a symmetric algorithm (using a single shared key). They are not competitors; in modern systems, they are partners.
+
+This document outlines their key differences in performance and use cases, as demonstrated by the practical exercises in this assignment.
+
+
+
+1.  **Cryptography Model (Symmetric vs. Asymmetric)**
+    *   **RSA (Asymmetric):** Uses a pair of keys that are mathematically linked: a public key and a private key.
+        - The public key can be shared with anyone and is used for ENCRYPTION.
+        - The private key must be kept secret and is used for DECRYPTION.
+        - This model is powerful for establishing communication with someone you've never met, as you only need their public key to send them a secure message.
+
+    *   **AES (Symmetric):** Uses a single secret key for both ENCRYPTION and DECRYPTION.
+        - The same key that locks the data is the one that unlocks it.
+        - This requires both the sender and receiver to have a copy of the same secret key beforehand. The secure distribution of this key is a major challenge, which RSA often helps solve.
+
+
+2.  **Performance (Speed)**
+    *   **RSA (Slow):** RSA's operations are based on complex mathematical problems involving large prime numbers (modular exponentiation). These calculations are computationally intensive and, therefore, significantly slower.
+    
+    *   **AES (Extremely Fast):** AES operates on simpler, faster algebraic principles (like substitution and permutation) on fixed-size blocks of data. It is designed to be highly efficient and can be implemented directly in hardware, making it orders of magnitude faster than RSA.
+    
+    *   **Conclusion:** AES is the clear choice for encrypting large amounts of data where speed is a concern. RSA is too slow for this purpose.
+
+
+3.  **Data Size Limitation**
+    *   **RSA (Strictly Limited):** As demonstrated in this assignment, RSA can only encrypt a small block of data, the size of which is determined by its key length (minus padding). For a 2048-bit key, this limit is around 214 bytes. It is fundamentally incapable of encrypting a large file on its own.
+
+    *   **AES (No Practical Limit):** AES is a block cipher that encrypts data in 16-byte chunks. To handle data of any size, it uses a "mode of operation" (like CBC, which we used). This mode securely chains the blocks together, allowing AES to encrypt files of any size, from kilobytes to terabytes.
+
+
+Based on the strengths and weaknesses above, each algorithm has a very specific job in modern security.
+
+**When to Use RSA:**
+Because it is slow but excellent at proving identity and establishing secure communication, RSA is used for tasks that happen infrequently but are critical for security setup.
+*   **Secure Key Exchange:** This is its most common use. It is used to encrypt a symmetric key (like an AES key) to send it securely to another party. This is the foundation of Hybrid Encryption.
+*   **Digital Signatures:** The private key can be used to "sign" a document or message. This signature can be verified by anyone with the public key, proving the message came from the owner of the private key and has not been altered.
+
+**When to Use AES:**
+Because it is incredibly fast and can handle bulk data, AES is the workhorse for encrypting the data itself.
+*   **File and Disk Encryption:** Encrypting files on your hard drive (e.g., BitLocker, FileVault).
+*   **Network Communication Security:** Securing the data sent over the internet (e.g., in HTTPS/TLS, securing your Wi-Fi with WPA2/WPA3).
+*   **Database Encryption:** Protecting sensitive information stored in databases.
+
+In practice, RSA and AES are used together in a "hybrid encryption" model that combines the best of both worlds:
+
+1.  To send a large, encrypted file, you first generate a brand new, random **AES key**.
+2.  You use this fast **AES key** to encrypt your large file.
+3.  You then use the recipient's slow but secure **RSA public key** to encrypt only the small AES key.
+4.  You send both the AES-encrypted file and the RSA-encrypted AES key to the recipient.
+5.  The recipient uses their **RSA private key** to quickly decrypt the AES key, and then uses that **AES key** to quickly decrypt the large file.
+
+This method gives you the convenience of public-key cryptography (RSA) and the performance of symmetric cryptography (AES).
